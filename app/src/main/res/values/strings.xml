@@ -1,0 +1,56 @@
+<resources>
+    <string name="app_name">泥视频</string>
+    <string name="start_url">https://www.nivod.cc/</string>
+
+    <string name="nav_home">首页</string>
+    <string name="nav_channel">频道</string>
+    <string name="nav_search">搜索</string>
+    <string name="nav_mine">我的</string>
+
+    <string name="btn_back">返回</string>
+    <string name="clear_all">清空</string>
+    <string name="ok">确定</string>
+    <string name="cancel">取消</string>
+    <string name="confirm_clear">确定清空？</string>
+
+    <string name="loading">加载中…</string>
+    <string name="load_fail">加载失败，下拉重试</string>
+    <string name="no_more">没有更多了</string>
+    <string name="no_result">没有找到结果</string>
+    <string name="parse_fail">解析不到播放地址，改用网页打开</string>
+    <string name="filter_all">全部</string>
+
+    <string name="search_hint">搜片名、演员</string>
+    <string name="hist_and_hot">搜索历史</string>
+
+    <string name="tab_history">播放历史</string>
+    <string name="tab_fav">我的收藏</string>
+    <string name="empty_history">还没有播放记录</string>
+    <string name="empty_fav">还没有收藏</string>
+
+    <string name="episodes">选集</string>
+    <string name="play_now">立即播放</string>
+    <string name="line_switch">线路</string>
+    <string name="line_now">已切到线路 %1$d/%2$d</string>
+    <string name="speed_now">倍速 %1$s</string>
+    <string name="mn_more">更多</string>
+    <string name="mn_lines">切换线路</string>
+    <string name="mn_speed">播放倍速</string>
+    <string name="mn_fav">收藏</string>
+    <string name="mn_unfav">取消收藏</string>
+    <string name="mn_remove_hist">从历史移除</string>
+    <string name="mn_web">用网页打开</string>
+    <string name="mn_copy">复制链接</string>
+    <string name="fav_added">已收藏</string>
+    <string name="fav_removed">已取消收藏</string>
+    <string name="copied">已复制</string>
+
+    <string name="gesture_hint">左半屏上下滑 = 亮度　·　右半屏上下滑 = 音量　·　双击 = 暂停/播放　·　长按标题 = 更多</string>
+    <string name="only_one_line">只有一条线路</string>
+
+    <string name="crash_title">闪退了 —— 把下面内容复制发我</string>
+    <string name="crash_copy">复制全部</string>
+    <string name="crash_close">关闭</string>
+    <string name="crash_copied">已复制，粘贴发我即可</string>
+    <string name="crash_file">堆栈文件: %1$s</string>
+</resources>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg">
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="54dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="4dp"
+            android:clipToPadding="false" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <ProgressBar
+        android:id="@+id/bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_gravity="top"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/accent"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/bottom_bar_bg"
+        android:orientation="horizontal">
+
+        <ImageButton android:id="@+id/nav_home" style="@style/BarBtn"
+            android:contentDescription="@string/nav_home" android:src="@drawable/ic_home" />
+        <ImageButton android:id="@+id/nav_channel" style="@style/BarBtn"
+            android:contentDescription="@string/nav_channel" android:src="@drawable/ic_grid" />
+        <ImageButton android:id="@+id/nav_search" style="@style/BarBtn"
+            android:contentDescription="@string/nav_search" android:src="@drawable/ic_search" />
+        <ImageButton android:id="@+id/nav_mine" style="@style/BarBtn"
+            android:contentDescription="@string/nav_mine" android:src="@drawable/ic_person" />
+    </LinearLayout>
+</FrameLayout>

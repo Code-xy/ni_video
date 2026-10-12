@@ -1,0 +1,18 @@
+*.iml
+.gradle/
+/local.properties
+/.idea/
+/build
+/app/build
+/captures
+.externalNativeBuild
+.cxx
+*.jks
+*.keystore
+ks.b64
+
+# 例外：仓库内置固定签名 keystore（要提交，保证签名稳定可覆盖升级）
+!signing/dev-release.jks
+
+# CI 失败日志回推分支用
+.ci/
