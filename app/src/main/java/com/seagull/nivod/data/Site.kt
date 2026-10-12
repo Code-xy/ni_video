@@ -1,9 +1,7 @@
 package com.seagull.nivod.data
 
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -37,8 +35,11 @@ object Site {
     const val UA = "Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 " +
             "(KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36"
 
-    private val HTML = "text/html,application/xhtml+xml,*/*;q=0.8".toMediaType()
-    private val JSON = "application/json".toMediaType()
+    // ⚠ 这里是 Accept 头用的逗号列表，只能当普通字符串。
+    // OkHttp 的 toMediaType() 只接受单个 MIME 类型（text/html、application/json; charset=utf-8），
+    // 传逗号列表会抛 IllegalArgumentException，而且是在静态初始化里 → ExceptionInInitializerError 直接崩。
+    private const val ACCEPT_HTML = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+    private const val ACCEPT_JSON = "application/json, text/javascript, */*; q=0.01"
 
     val client: OkHttpClient = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS)
@@ -51,18 +52,18 @@ object Site {
     private fun url(pathOrUrl: String): String =
         if (pathOrUrl.startsWith("http")) pathOrUrl else BASE + pathOrUrl.removePrefix("/")
 
-    private fun get(pathOrUrl: String, accept: okhttp3.MediaType, ajax: Boolean = false, referer: String? = null): String {
+    private fun get(pathOrUrl: String, accept: String, ajax: Boolean = false, referer: String? = null): String {
         val b = Request.Builder()
             .url(url(pathOrUrl))
             .header("User-Agent", UA)
-            .header("Accept", accept.toString())
+            .header("Accept", accept)
             .header("Accept-Language", "zh-CN,zh;q=0.9")
             .header("Referer", referer ?: BASE)
         if (ajax) b.header("X-Requested-With", "XMLHttpRequest")
         client.newCall(b.build()).execute().use { return it.body?.string().orEmpty() }
     }
 
-    fun fetchDoc(pathOrUrl: String): Document = Jsoup.parse(get(pathOrUrl, HTML), url(pathOrUrl))
+    fun fetchDoc(pathOrUrl: String): Document = Jsoup.parse(get(pathOrUrl, ACCEPT_HTML), url(pathOrUrl))
 
     // ───────── 列表 ─────────
 
@@ -169,7 +170,7 @@ object Site {
     fun playInfo(id: String, epSlug: String): List<Line> {
         val body = get(
             "xhr_playinfo/$id-$epSlug",
-            JSON, ajax = true,
+            ACCEPT_JSON, ajax = true,
             referer = BASE + "vodplay/$id/$epSlug"
         )
         val out = ArrayList<Line>()
