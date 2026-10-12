@@ -2,8 +2,12 @@ package com.seagull.nivod
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -46,6 +50,13 @@ class PlayerActivity : AppCompatActivity() {
 
         private const val PREFS = "nivod_prefs"
         private const val K_HINT = "gesture_hint_shown"
+
+        // GSYVideoView.CURRENT_STATE_* （那些常量声明在类上、不在公开接口里，这里本地定义避免引用问题）
+        private const val STATE_PLAYING = 2      // CURRENT_STATE_PLAYING
+        private const val STATE_BUFFERING = 3    // CURRENT_STATE_PLAYING_BUFFERING_START
+        private const val STATE_PAUSE = 5        // CURRENT_STATE_PAUSE
+
+        private const val OVERLAY_SHOW_MS = 3000L
     }
 
     private lateinit var player: StandardGSYVideoPlayer
@@ -55,6 +66,11 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var btnPrev: ImageButton
     private lateinit var btnNext: ImageButton
     private lateinit var btnEps: ImageButton
+    private lateinit var overlay: LinearLayout
+
+    /** 叠加操作条的自动淡出 */
+    private val uiHandler = Handler(Looper.getMainLooper())
+    private val hideOverlayTask = Runnable { maybeHideOverlay() }
 
     private var orientationUtils: OrientationUtils? = null
     private val pool = Executors.newFixedThreadPool(2)
@@ -91,6 +107,7 @@ class PlayerActivity : AppCompatActivity() {
         btnPrev = findViewById(R.id.btn_prev)
         btnNext = findViewById(R.id.btn_next)
         btnEps = findViewById(R.id.btn_eps)
+        overlay = findViewById(R.id.actions)
         player.keepScreenOn = true
 
         urls = intent.getStringArrayListExtra(EXTRA_URLS) ?: arrayListOf()
@@ -115,6 +132,7 @@ class PlayerActivity : AppCompatActivity() {
         setupOrientation()
         setupOverlay()
         updateEpUi()
+        showOverlay()          // 进来先亮 3 秒，之后自动淡出
         hintOnce()
     }
 
@@ -306,6 +324,42 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
+    // ───── 叠加条自动显隐 ─────
+
+    /** 任何触摸都让叠加条重新出现，3 秒后淡出；暂停/缓冲时保留，免得想操作却找不到按钮 */
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        if (ev.action == MotionEvent.ACTION_DOWN) showOverlay()
+        return super.dispatchTouchEvent(ev)
+    }
+
+    private fun showOverlay() {
+        overlay.animate().cancel()
+        if (overlay.visibility != View.VISIBLE) {
+            overlay.alpha = 0f
+            overlay.visibility = View.VISIBLE
+        }
+        overlay.animate().alpha(1f).setDuration(150).start()
+        uiHandler.removeCallbacks(hideOverlayTask)
+        uiHandler.postDelayed(hideOverlayTask, OVERLAY_SHOW_MS)
+    }
+
+    private fun maybeHideOverlay() {
+        val st = runCatching { player.currentState }.getOrDefault(0)
+        when (st) {
+            STATE_PLAYING -> hideOverlay()
+            STATE_PAUSE, STATE_BUFFERING -> uiHandler.postDelayed(hideOverlayTask, 1500)
+            else -> hideOverlay()
+        }
+    }
+
+    private fun hideOverlay() {
+        if (overlay.visibility != View.VISIBLE) return
+        overlay.animate().cancel()
+        overlay.animate().alpha(0f).setDuration(250)
+            .withEndAction { overlay.visibility = View.GONE }
+            .start()
+    }
+
     // ───── 更多 ─────
 
     private fun showMore() {
@@ -362,6 +416,7 @@ class PlayerActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         pool.shutdownNow()
+        uiHandler.removeCallbacksAndMessages(null)
         runCatching { orientationUtils?.releaseListener() }
         runCatching { player.release() }
     }
