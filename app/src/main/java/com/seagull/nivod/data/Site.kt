@@ -47,6 +47,17 @@ object Site {
         .followRedirects(true)
         .build()
 
+    /**
+     * 专用于线路探活的 client：超时必须短。
+     * 之前复用上面的 client（连接超时 15s），死线路会把整个探活拖到 7s 以上。
+     */
+    val probeClient: OkHttpClient = OkHttpClient.Builder()
+        .connectTimeout(4, TimeUnit.SECONDS)
+        .readTimeout(4, TimeUnit.SECONDS)
+        .callTimeout(5, TimeUnit.SECONDS)
+        .followRedirects(true)
+        .build()
+
     private val idRe = Regex("/voddetail/(\\d+)")
 
     private fun url(pathOrUrl: String): String =

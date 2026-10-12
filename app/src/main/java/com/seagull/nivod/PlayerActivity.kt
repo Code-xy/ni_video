@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -11,13 +12,16 @@ import androidx.appcompat.app.AppCompatActivity
 import com.seagull.nivod.data.FavStore
 import com.seagull.nivod.data.Site
 import com.seagull.nivod.data.Video
+import com.seagull.nivod.ui.PlayerLauncher
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+import java.util.concurrent.Executors
 
 /**
  * 播放页。
- * 站点每个分集给多条线路（实测 3~12 条），launcher 已探活并优先选了可用的一条，
- * 这里提供手动切换；点「线路」能看到全部并随时换。
+ * - 多线路：站点每分集给 3~12 条，launcher 已探活选好，这里可随时手动换
+ * - 选集 / 上一集 / 下一集 / 选集正序倒序
+ * - 倍速 / 收藏 / 亮度音量手势 / 旋转全屏
  */
 class PlayerActivity : AppCompatActivity() {
 
@@ -27,6 +31,8 @@ class PlayerActivity : AppCompatActivity() {
         const val EXTRA_LABELS = "labels"
         const val EXTRA_ID = "id"
         const val EXTRA_EP = "ep"
+        const val EXTRA_EP_SLUGS = "ep_slugs"
+        const val EXTRA_EP_LABELS = "ep_labels"
         const val EXTRA_TITLE = "title"
         const val EXTRA_COVER = "cover"
         const val EXTRA_SUB = "sub"
@@ -43,13 +49,26 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private lateinit var player: StandardGSYVideoPlayer
-    private var orientationUtils: OrientationUtils? = null
+    private lateinit var bar: ProgressBar
     private lateinit var speedBtn: TextView
     private lateinit var favBtn: ImageButton
+    private lateinit var btnPrev: ImageButton
+    private lateinit var btnNext: ImageButton
+    private lateinit var btnEps: ImageButton
+
+    private var orientationUtils: OrientationUtils? = null
+    private val pool = Executors.newFixedThreadPool(2)
 
     private var urls: ArrayList<String> = arrayListOf()
     private var labels: ArrayList<String> = arrayListOf()
     private var idx = 0
+
+    private var epSlugs: ArrayList<String> = arrayListOf()
+    private var epLabels: ArrayList<String> = arrayListOf()
+    private var epIdx = 0
+    private var sortDesc = false
+    private var switching = false
+
     private var videoId = ""
     private var epSlug = ""
     private var title = ""
@@ -66,13 +85,19 @@ class PlayerActivity : AppCompatActivity() {
         setContentView(R.layout.activity_player)
 
         player = findViewById(R.id.player)
+        bar = findViewById(R.id.bar)
         speedBtn = findViewById(R.id.btn_speed)
         favBtn = findViewById(R.id.btn_fav)
+        btnPrev = findViewById(R.id.btn_prev)
+        btnNext = findViewById(R.id.btn_next)
+        btnEps = findViewById(R.id.btn_eps)
         player.keepScreenOn = true
 
         urls = intent.getStringArrayListExtra(EXTRA_URLS) ?: arrayListOf()
         labels = intent.getStringArrayListExtra(EXTRA_LABELS) ?: arrayListOf()
         idx = intent.getIntExtra(EXTRA_INDEX, 0).coerceIn(0, (urls.size - 1).coerceAtLeast(0))
+        epSlugs = intent.getStringArrayListExtra(EXTRA_EP_SLUGS) ?: arrayListOf()
+        epLabels = intent.getStringArrayListExtra(EXTRA_EP_LABELS) ?: arrayListOf()
         videoId = intent.getStringExtra(EXTRA_ID).orEmpty()
         epSlug = intent.getStringExtra(EXTRA_EP).orEmpty()
         title = intent.getStringExtra(EXTRA_TITLE).orEmpty().ifEmpty { "播放中" }
@@ -81,11 +106,15 @@ class PlayerActivity : AppCompatActivity() {
         badge = intent.getStringExtra(EXTRA_BADGE).orEmpty()
         score = intent.getStringExtra(EXTRA_SCORE).orEmpty()
 
+        epIdx = epSlugs.indexOf(epSlug).let { if (it >= 0) it else 0 }
+        if (epSlugs.isEmpty() && epSlug.isNotEmpty()) epSlugs.add(epSlug)
+
         if (urls.isEmpty()) { finish(); return }
 
         setupPlayer(intent.getLongExtra(EXTRA_POS, 0L))
         setupOrientation()
         setupOverlay()
+        updateEpUi()
         hintOnce()
     }
 
@@ -100,18 +129,16 @@ class PlayerActivity : AppCompatActivity() {
         player.setLockLand(false)
 
         player.setUp(currentUrl(), false, null, title)
-        // 站点 CDN 实测无防盗链，带头只为以后加保护时不用改代码
         player.setMapHeadData(hashMapOf("Referer" to Site.BASE, "User-Agent" to Site.UA))
         player.startPlayLogic()
         if (pos > 0) runCatching { player.seekTo(pos) }
 
-        player.getTitleTextView().text = title
         player.getTitleTextView().setOnLongClickListener { showMore(); true }
     }
 
     private fun setupOrientation() {
         val ou = OrientationUtils(this, player)
-        ou.setEnable(true)                 // 跟随设备旋转自动进出全屏
+        ou.setEnable(true)
         orientationUtils = ou
         player.getFullscreenButton()?.apply {
             visibility = View.VISIBLE
@@ -147,6 +174,23 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         findViewById<ImageButton>(R.id.btn_lines).setOnClickListener { showLines() }
+
+        btnPrev.setOnClickListener {
+            if (epIdx <= 0) tip(getString(R.string.no_prev_ep)) else switchEpisode(epIdx - 1)
+        }
+        btnNext.setOnClickListener {
+            if (epIdx >= epSlugs.size - 1) tip(getString(R.string.no_next_ep)) else switchEpisode(epIdx + 1)
+        }
+        btnEps.setOnClickListener { showEpisodes() }
+    }
+
+    private fun updateEpUi() {
+        val multi = epSlugs.size > 1
+        btnPrev.visibility = if (multi) View.VISIBLE else View.GONE
+        btnNext.visibility = if (multi) View.VISIBLE else View.GONE
+        btnEps.visibility = if (multi) View.VISIBLE else View.GONE
+        player.getTitleTextView().text =
+            if (multi) "$title   " + getString(R.string.ep_now, epIdx + 1, epSlugs.size) else title
     }
 
     private fun currentVideo() = Video(
@@ -174,7 +218,8 @@ class PlayerActivity : AppCompatActivity() {
         favBtn.setColorFilter(if (on) 0xFF3DDC97.toInt() else 0xFFCCCCCC.toInt())
     }
 
-    /** 线路选择：把站点给的全部线路列出来，当前那条标出来 */
+    // ───── 线路 ─────
+
     private fun showLines() {
         if (urls.size <= 1) { tip(getString(R.string.only_one_line)); return }
         val items = Array(urls.size) { i ->
@@ -183,24 +228,89 @@ class PlayerActivity : AppCompatActivity() {
         }
         AlertDialog.Builder(this)
             .setTitle(getString(R.string.line_switch) + " (${idx + 1}/${urls.size})")
-            .setItems(items) { _, which -> switchTo(which) }
+            .setItems(items) { _, which -> switchLine(which) }
+            .setNegativeButton(R.string.cancel, null)
             .show()
     }
 
-    private fun switchTo(which: Int) {
+    private fun switchLine(which: Int) {
         if (which == idx) return
         val at = player.currentPositionWhenPlaying
         idx = which
-        player.release()
-        player.setUp(currentUrl(), false, null, title)
-        player.setMapHeadData(hashMapOf("Referer" to Site.BASE, "User-Agent" to Site.UA))
-        player.startPlayLogic()
-        if (at > 0) runCatching { player.seekTo(at) }
+        reload(currentUrl(), at)
         tip(getString(R.string.line_now, idx + 1, urls.size))
     }
 
+    // ───── 选集 ─────
+
+    private fun showEpisodes() {
+        if (epSlugs.size <= 1) { tip(getString(R.string.only_one_line)); return }
+        val order = if (sortDesc) epSlugs.indices.reversed().toList() else epSlugs.indices.toList()
+        val items = Array(order.size) { p ->
+            val i = order[p]
+            val label = epLabels.getOrElse(i) { "第${i + 1}集" }
+            if (i == epIdx) "● $label" else "　$label"
+        }
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.ep_pick) + " (${epIdx + 1}/${epSlugs.size})")
+            .setItems(items) { _, p -> switchEpisode(order[p]) }
+            .setNeutralButton(if (sortDesc) R.string.ep_order_asc else R.string.ep_order_desc) { _, _ ->
+                sortDesc = !sortDesc
+                showEpisodes()          // 重新弹出，顺序已变
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun switchEpisode(target: Int) {
+        if (switching || target !in epSlugs.indices) return
+        switching = true
+        bar.visibility = View.VISIBLE
+        saveProgress()                              // 先把当前这集进度存了
+
+        val nextSlug = epSlugs[target]
+        pool.execute {
+            val (lines, pick) = PlayerLauncher.loadLines(videoId, nextSlug)
+            runOnUiThread {
+                switching = false
+                bar.visibility = View.GONE
+                if (lines.isEmpty()) { tip(getString(R.string.parse_fail)); return@runOnUiThread }
+
+                epIdx = target
+                epSlug = nextSlug
+                urls = ArrayList(lines.map { it.url })
+                labels = ArrayList(lines.map { "${it.from} · ${it.name}" })
+                idx = pick
+
+                val hist = History.last(this, videoId)
+                val startPos = if (hist != null && hist.first == nextSlug) hist.second else 0L
+                reload(currentUrl(), startPos)
+                updateEpUi()
+            }
+        }
+    }
+
+    /** 重新起播（换线路/换集都走这里） */
+    private fun reload(url: String, pos: Long) {
+        player.release()
+        player.setUp(url, false, null, title)
+        player.setMapHeadData(hashMapOf("Referer" to Site.BASE, "User-Agent" to Site.UA))
+        player.startPlayLogic()
+        if (pos > 0) runCatching { player.seekTo(pos) }
+    }
+
+    private fun saveProgress() {
+        val ms = player.currentPositionWhenPlaying
+        if (ms > 3000 && videoId.isNotEmpty() && epSlug.isNotEmpty()) {
+            History.save(this, currentVideo(), epSlug, ms)
+        }
+    }
+
+    // ───── 更多 ─────
+
     private fun showMore() {
         val items = arrayOf(
+            getString(R.string.ep_pick),
             getString(R.string.mn_lines),
             getString(R.string.mn_speed),
             getString(if (FavStore.has(this, videoId)) R.string.mn_unfav else R.string.mn_fav),
@@ -210,14 +320,15 @@ class PlayerActivity : AppCompatActivity() {
             .setTitle(R.string.mn_more)
             .setItems(items) { _, i ->
                 when (i) {
-                    0 -> showLines()
-                    1 -> applySpeed()
-                    2 -> {
+                    0 -> showEpisodes()
+                    1 -> showLines()
+                    2 -> applySpeed()
+                    3 -> {
                         val now = FavStore.toggle(this, currentVideo())
                         paintFav(now)
                         tip(getString(if (now) R.string.fav_added else R.string.fav_removed))
                     }
-                    3 -> startActivity(
+                    4 -> startActivity(
                         Intent(this, WebActivity::class.java)
                             .putExtra(WebActivity.EXTRA_URL, Site.BASE + "vodplay/$videoId/$epSlug")
                     )
@@ -233,7 +344,10 @@ class PlayerActivity : AppCompatActivity() {
         Toast.makeText(this, R.string.gesture_hint, Toast.LENGTH_LONG).show()
     }
 
+    // ───── 生命周期 ─────
+
     private fun finishWithResult() {
+        saveProgress()
         val i = Intent()
         i.putExtra(RES_POS, player.currentPositionWhenPlaying)
         i.putExtra(RES_ID, videoId)
@@ -242,11 +356,12 @@ class PlayerActivity : AppCompatActivity() {
         finish()
     }
 
-    override fun onPause() { super.onPause(); runCatching { player.onVideoPause() } }
+    override fun onPause() { super.onPause(); runCatching { player.onVideoPause() }; saveProgress() }
     override fun onResume() { super.onResume(); runCatching { player.onVideoResume() } }
 
     override fun onDestroy() {
         super.onDestroy()
+        pool.shutdownNow()
         runCatching { orientationUtils?.releaseListener() }
         runCatching { player.release() }
     }

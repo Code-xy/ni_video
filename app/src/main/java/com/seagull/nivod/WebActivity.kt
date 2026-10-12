@@ -212,7 +212,8 @@ class WebActivity : AppCompatActivity() {
                     putExtra(PlayerActivity.EXTRA_TITLE, title)
                     putExtra(PlayerActivity.EXTRA_POS, 0L)
                 }
-                playerResult.launch(i)
+                if (isFinishing || isDestroyed) return@runOnUiThread
+                try { playerResult.launch(i) } catch (e: Exception) { tip(e.message ?: "启动播放失败") }
             }
         }
     }

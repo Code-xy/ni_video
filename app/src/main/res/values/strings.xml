@@ -47,6 +47,14 @@
 
     <string name="gesture_hint">左半屏上下滑 = 亮度　·　右半屏上下滑 = 音量　·　双击 = 暂停/播放　·　长按标题 = 更多</string>
     <string name="only_one_line">只有一条线路</string>
+    <string name="ep_prev">上一集</string>
+    <string name="ep_next">下一集</string>
+    <string name="ep_pick">选集</string>
+    <string name="ep_order_asc">正序</string>
+    <string name="ep_order_desc">倒序</string>
+    <string name="ep_now">第 %1$d/%2$d 集</string>
+    <string name="no_prev_ep">已经是第一集</string>
+    <string name="no_next_ep">已经是最后一集</string>
 
     <string name="crash_title">闪退了 —— 把下面内容复制发我</string>
     <string name="crash_copy">复制全部</string>

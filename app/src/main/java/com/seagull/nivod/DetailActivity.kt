@@ -179,7 +179,10 @@ class DetailActivity : AppCompatActivity() {
     private fun playSelected() {
         val d = detail ?: return
         if (selectedEp.isBlank()) { tip(getString(R.string.no_result)); return }
-        PlayerLauncher.open(this, toVideo(d), selectedEp, playerResult, busy = ::setBusy, onFail = ::onPlayFail)
+        PlayerLauncher.open(
+            this, toVideo(d), selectedEp, d.episodes,
+            playerResult, busy = ::setBusy, onFail = ::onPlayFail
+        )
     }
 
     private fun onPlayFail(v: Video) {

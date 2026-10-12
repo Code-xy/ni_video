@@ -9,6 +9,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <ProgressBar
+        android:id="@+id/bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_gravity="top"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/accent"
+        android:visibility="gone" />
+
     <!-- 原生叠加操作条：GSY 标题栏不好塞自定义控件，放右上角最干净 -->
     <LinearLayout
         android:layout_width="wrap_content"
@@ -21,6 +31,36 @@
         android:orientation="horizontal"
         android:paddingLeft="4dp"
         android:paddingRight="4dp">
+
+        <ImageButton
+            android:id="@+id/btn_prev"
+            android:layout_width="36dp"
+            android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/ep_prev"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_prev"
+            android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/btn_next"
+            android:layout_width="36dp"
+            android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/ep_next"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_next"
+            android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/btn_eps"
+            android:layout_width="36dp"
+            android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/episodes"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_swap"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/btn_speed"
