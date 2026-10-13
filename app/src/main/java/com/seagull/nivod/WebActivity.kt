@@ -24,6 +24,7 @@ import androidx.webkit.WebViewCompat
 import org.json.JSONObject
 import java.io.ByteArrayInputStream
 import java.util.concurrent.Executors
+import com.seagull.nivod.ui.Insets
 
 /** 网页兜底：需要登录态 / 原生解析失败 / 用户主动要看网页时用 */
 class WebActivity : AppCompatActivity() {

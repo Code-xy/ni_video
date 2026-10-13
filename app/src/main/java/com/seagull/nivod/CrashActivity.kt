@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.seagull.nivod.ui.Insets
 
 /** 崩溃现场：把堆栈摊在屏幕上，可一键复制，没 adb 也能取证 */
 class CrashActivity : AppCompatActivity() {
