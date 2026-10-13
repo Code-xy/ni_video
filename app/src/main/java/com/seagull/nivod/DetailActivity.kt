@@ -11,6 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import coil.load
 import com.seagull.nivod.ui.Insets
 import com.seagull.nivod.data.Detail
@@ -199,11 +200,11 @@ class DetailActivity : AppCompatActivity() {
         val d = detail ?: return
         val on = FavStore.has(this, d.id)
         favBtn.alpha = if (on) 1f else 0.45f
-        favBtn.setColorFilter(if (on) 0xFF3DDC97.toInt() else 0xFFCCCCCC.toInt())
+        favBtn.setColorFilter(ContextCompat.getColor(this, if (on) R.color.accent else R.color.icon_tint))
         favBtn.setOnClickListener {
             val now = FavStore.toggle(this, toVideo(d))
             favBtn.alpha = if (now) 1f else 0.45f
-            favBtn.setColorFilter(if (now) 0xFF3DDC97.toInt() else 0xFFCCCCCC.toInt())
+            favBtn.setColorFilter(ContextCompat.getColor(this, if (now) R.color.accent else R.color.icon_tint))
             tip(getString(if (now) R.string.fav_added else R.string.fav_removed))
         }
     }

@@ -108,3 +108,28 @@ APK : https://github.com/Code-xy/ni_video/raw/ci-logs/.ci/app-release.apk
 日志: https://github.com/Code-xy/ni_video/raw/ci-logs/.ci/build.log
 ```
 或在 Actions 页面点 **Run workflow** 手动构建（可选 ABI / 版本号 / 分包）。
+
+---
+
+## 外观：明暗双主题（薄荷青）
+
+色板**直接取自 `Code-xy/cili_search` 的 Material3 主题**（Primary `#0E9F94`），不是另调的一套。
+
+| 语义 | 浅色 | 深色 |
+|---|---|---|
+| accent / primary | `#0E9F94` | `#6FDCCF` |
+| background | `#F6FBFA` | `#0E1514` |
+| surface | `#FFFFFF` | `#141C1B` |
+| surfaceVariant | `#E7F2F0` | `#22302E` |
+| onBackground | `#101817` | `#E4EEEC` |
+| onSurfaceVariant | `#48605B` | `#B2C7C2` |
+| outline / variant | `#A8BFBA` / `#D8E7E4` | `#6B807B` / `#33443F` |
+| tertiary | `#FF8A65` | `#FFB59B` |
+
+实现：
+- `values/colors.xml`（浅色）+ `values-night/colors.xml`（深色），系统自动切换
+- 主题用 `Theme.AppCompat.DayNight.NoActionBar`，状态栏明暗用 `@bool/light_status_bar`（避免整套 theme 重复）
+- 布局里**没有硬编码色值**，全部走颜色资源
+- 卡片角标底色 = accent、文字 = `on_accent`，明暗两套对比度都够
+- **播放页刻意固定深色**（`player_*` 系列不放进 values-night），视频场景不跟主题变
+- 「我的」页面可切换：跟随系统 / 浅色 / 深色（`ThemePref` + `AppCompatDelegate`）

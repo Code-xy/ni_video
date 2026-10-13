@@ -1,4 +1,28 @@
 <resources>
-    <color name="bg">#FF0E0E12</color>
-    <color name="accent">#FF3DDC97</color>
+    <!-- 色板取自 Code-xy/cili_search 的 Material3 薄荷青主题（Primary #0E9F94） -->
+    <color name="bg">#FFF6FBFA</color>
+    <color name="surface">#FFFFFFFF</color>
+    <color name="surface_variant">#FFE7F2F0</color>
+    <color name="bar_bg">#FFFFFFFF</color>
+    <color name="divider">#FFD8E7E4</color>
+
+    <color name="text_primary">#FF101817</color>
+    <color name="text_secondary">#FF48605B</color>
+    <color name="text_tertiary">#FFA8BFBA</color>
+
+    <color name="accent">#FF0E9F94</color>
+    <color name="accent_container">#FFB6F0E8</color>
+    <color name="on_accent_container">#FF032E2A</color>
+    <color name="on_accent">#FFFFFFFF</color>
+
+    <color name="chip_bg">#FFE7F2F0</color>
+    <color name="icon_tint">#FF48605B</color>
+    <color name="scrim">#B3000000</color>
+    <color name="error">#FFB3261E</color>
+
+    <!-- 播放页固定深色（视频场景不随主题变），所以不放进 values-night -->
+    <color name="player_bg">#FF0E1514</color>
+    <color name="player_chip_bg">#B3141C1B</color>
+    <color name="player_icon">#FFE4EEEC</color>
+    <color name="player_accent">#FF6FDCCF</color>
 </resources>

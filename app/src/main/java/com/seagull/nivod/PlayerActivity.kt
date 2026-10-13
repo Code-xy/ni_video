@@ -12,6 +12,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.appcompat.app.AppCompatActivity
 import com.seagull.nivod.data.FavStore
 import com.seagull.nivod.data.Site
@@ -210,6 +211,7 @@ class PlayerActivity : AppCompatActivity() {
         btnPrev.visibility = if (multi) View.VISIBLE else View.GONE
         btnNext.visibility = if (multi) View.VISIBLE else View.GONE
         btnEps.visibility = if (multi) View.VISIBLE else View.GONE
+        findViewById<View>(R.id.divider1).visibility = if (multi) View.VISIBLE else View.GONE
         player.getTitleTextView().text =
             if (multi) "$title   " + getString(R.string.ep_now, epIdx + 1, epSlugs.size) else title
     }
@@ -235,8 +237,11 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun paintFav(on: Boolean) {
+        val color = ContextCompat.getColor(
+            this, if (on) R.color.player_accent else R.color.player_icon
+        )
         favBtn.alpha = if (on) 1f else 0.45f
-        favBtn.setColorFilter(if (on) 0xFF3DDC97.toInt() else 0xFFCCCCCC.toInt())
+        favBtn.setColorFilter(color)
     }
 
     // ───── 线路 ─────

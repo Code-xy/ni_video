@@ -23,12 +23,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="top|start"
             android:layout_margin="3dp"
-            android:background="#B3E53935"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
+            android:background="@color/accent"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
             android:paddingTop="1dp"
             android:paddingBottom="1dp"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/on_accent"
             android:textSize="10sp"
             android:visibility="gone" />
 
@@ -38,12 +38,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="3dp"
-            android:background="#B3000000"
+            android:background="@color/scrim"
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
             android:paddingTop="1dp"
             android:paddingBottom="1dp"
-            android:textColor="#FF3DDC97"
+            android:textColor="@color/player_accent"
             android:textSize="11sp"
             android:visibility="gone" />
 
@@ -52,7 +52,7 @@
             android:layout_width="0dp"
             android:layout_height="2dp"
             android:layout_gravity="bottom"
-            android:background="#FF3DDC97"
+            android:background="@color/accent"
             android:visibility="gone" />
     </FrameLayout>
 
@@ -65,7 +65,7 @@
         android:paddingLeft="2dp"
         android:paddingRight="2dp"
         android:paddingTop="4dp"
-        android:textColor="#E6E6E6"
+        android:textColor="@color/text_primary"
         android:textSize="12sp" />
 
     <TextView
@@ -77,6 +77,6 @@
         android:paddingLeft="2dp"
         android:paddingRight="2dp"
         android:paddingBottom="2dp"
-        android:textColor="#88FFFFFF"
+        android:textColor="@color/text_secondary"
         android:textSize="10sp" />
 </LinearLayout>

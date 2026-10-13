@@ -20,6 +20,9 @@ class App : Application(), ImageLoaderFactory {
         // 默认内核必然 UnsatisfiedLinkError 闪退。指定 Exo2 后走 media3，不碰 IJK。
         PlayerFactory.setPlayManager(Exo2PlayerManager::class.java)
 
+        // 明暗外观（跟随系统 / 浅色 / 深色）
+        ThemePref.applySaved(this)
+
         CrashHandler.install(this)
     }
 

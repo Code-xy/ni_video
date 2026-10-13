@@ -8,6 +8,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -71,7 +72,34 @@ class MineActivity : AppCompatActivity() {
         }
         findViewById<ImageButton>(R.id.clear).setOnClickListener { confirmClear() }
 
+        // 明暗外观
+        findViewById<TextView>(R.id.theme_system).setOnClickListener { pickTheme(ThemePref.FOLLOW) }
+        findViewById<TextView>(R.id.theme_light).setOnClickListener { pickTheme(ThemePref.LIGHT) }
+        findViewById<TextView>(R.id.theme_dark).setOnClickListener { pickTheme(ThemePref.DARK) }
+        paintThemeChips()
+
         switchTab(showFav)
+    }
+
+    private fun pickTheme(mode: Int) {
+        ThemePref.set(this, mode)
+        paintThemeChips()
+    }
+
+    private fun paintThemeChips() {
+        val cur = ThemePref.mode(this)
+        val on = ContextCompat.getColor(this, R.color.accent)
+        val off = ContextCompat.getColor(this, R.color.text_secondary)
+        listOf(
+            R.id.theme_system to ThemePref.FOLLOW,
+            R.id.theme_light to ThemePref.LIGHT,
+            R.id.theme_dark to ThemePref.DARK
+        ).forEach { (id, mode) ->
+            findViewById<TextView>(id).apply {
+                setTextColor(if (cur == mode) on else off)
+                alpha = if (cur == mode) 1f else 0.7f
+            }
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

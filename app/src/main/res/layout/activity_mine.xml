@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/nav_mine"
-            android:textColor="#EEEEEE"
+            android:textColor="@color/text_primary"
             android:textSize="16sp" />
 
         <ImageButton
@@ -45,6 +45,25 @@
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/nav_search"
             android:src="@drawable/ic_globe" />
+    </LinearLayout>
+
+    <!-- 明暗外观 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="8dp"
+        android:paddingTop="8dp"
+        android:paddingRight="8dp"
+        android:paddingBottom="2dp">
+
+        <TextView android:id="@+id/theme_system" style="@style/Chip"
+            android:text="@string/theme_system" />
+        <TextView android:id="@+id/theme_light" style="@style/Chip"
+            android:text="@string/theme_light" />
+        <TextView android:id="@+id/theme_dark" style="@style/Chip"
+            android:text="@string/theme_dark" />
     </LinearLayout>
 
     <LinearLayout
@@ -88,7 +107,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:textColor="#77FFFFFF"
+            android:textColor="@color/text_tertiary"
             android:textSize="14sp"
             android:visibility="gone" />
     </FrameLayout>

@@ -61,4 +61,8 @@
     <string name="crash_close">关闭</string>
     <string name="crash_copied">已复制，粘贴发我即可</string>
     <string name="crash_file">堆栈文件: %1$s</string>
+
+    <string name="theme_system">跟随系统</string>
+    <string name="theme_light">浅色</string>
+    <string name="theme_dark">深色</string>
 </resources>
