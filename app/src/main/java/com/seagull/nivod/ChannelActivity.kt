@@ -181,8 +181,7 @@ class ChannelActivity : AppCompatActivity() {
             underline.visibility = if (on) View.VISIBLE else View.INVISIBLE
         }
         head.text = channel.label
-        subtitle.text = listOf(channel.label, region.label, type.label)
-            .distinct().joinToString(" · ")
+        paintSubtitle()
     }
 
     // ───── 筛选弹窗（地区 + 类型，等分三列，松快得多）─────
@@ -274,6 +273,17 @@ class ChannelActivity : AppCompatActivity() {
         tv.alpha = if (on) 1f else 0.85f
     }
 
+
+    /** 副标题只显示筛选条件与条数，不再重复频道名 */
+    private fun paintSubtitle() {
+        val parts = ArrayList<String>()
+        if (region != Region.ALL) parts.add(region.label)
+        if (type != ShowType.ALL) parts.add(type.label)
+        val n = adapter.size()
+        val body = if (n > 0) "共 $n 部" else ""
+        subtitle.text = (parts + listOfNotNull(body.ifEmpty { null })).joinToString(" · ")
+    }
+
     private fun paintFilterBtn() {
         val n = (if (region != Region.ALL) 1 else 0) + (if (type != ShowType.ALL) 1 else 0)
         filterBtn.text = if (n == 0) getString(R.string.filter) else "${getString(R.string.filter)} · $n"
@@ -306,7 +316,7 @@ class ChannelActivity : AppCompatActivity() {
                 when {
                     res == null -> tip(getString(R.string.load_fail))
                     res.isEmpty() -> { adapter.add(emptyList(), false); tip(getString(R.string.no_result)) }
-                    else -> adapter.add(res, false)
+                    else -> { adapter.add(res, false); paintSubtitle() }
                 }
             }
         }
