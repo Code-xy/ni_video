@@ -50,4 +50,7 @@ jobs:
       abi-filters:    ${{ inputs.abi_filters || '' }}
       version-name:   ${{ inputs.version_name || '' }}
       version-code:   ${{ inputs.version_code || '' }}
-      release-on-tag: ${{ inputs.release_on_tag == false && 'false' || 'true' }}
+      # ⚠ 不能写成 inputs.release_on_tag == false —— tag 推送时它是 null，
+      #   GitHub 表达式会把 null 和 false 都转成数字 0，于是 null == false 为 true，
+      #   结果传成 'false'，Release 被静默跳过。只在手动触发时才理会这个输入。
+      release-on-tag: ${{ github.event_name == 'workflow_dispatch' && inputs.release_on_tag == false && 'false' || 'true' }}
