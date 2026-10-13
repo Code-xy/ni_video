@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="58dp"
+    android:background="@drawable/bottom_bar_bg"
+    android:orientation="horizontal">
+
+    <LinearLayout android:id="@+id/nav_home" style="@style/NavItem">
+        <ImageView android:id="@+id/icon_home" style="@style/NavIcon"
+            android:src="@drawable/ic_home" android:contentDescription="@string/nav_home" />
+        <TextView android:id="@+id/label_home" style="@style/NavLabel"
+            android:text="@string/nav_home" />
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/nav_channel" style="@style/NavItem">
+        <ImageView android:id="@+id/icon_channel" style="@style/NavIcon"
+            android:src="@drawable/ic_grid" android:contentDescription="@string/nav_channel" />
+        <TextView android:id="@+id/label_channel" style="@style/NavLabel"
+            android:text="@string/nav_channel" />
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/nav_search" style="@style/NavItem">
+        <ImageView android:id="@+id/icon_search" style="@style/NavIcon"
+            android:src="@drawable/ic_search" android:contentDescription="@string/nav_search" />
+        <TextView android:id="@+id/label_search" style="@style/NavLabel"
+            android:text="@string/nav_search" />
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/nav_mine" style="@style/NavItem">
+        <ImageView android:id="@+id/icon_mine" style="@style/NavIcon"
+            android:src="@drawable/ic_person" android:contentDescription="@string/nav_mine" />
+        <TextView android:id="@+id/label_mine" style="@style/NavLabel"
+            android:text="@string/nav_mine" />
+    </LinearLayout>
+</LinearLayout>

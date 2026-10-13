@@ -23,6 +23,7 @@ import com.seagull.nivod.ui.VideoAdapter
 import com.seagull.nivod.ui.WordAdapter
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
+import com.seagull.nivod.ui.Nav
 
 /** 搜索：/search.html?keyword=X，实测恒定 48 条且无分页 */
 class SearchActivity : AppCompatActivity() {
@@ -80,6 +81,8 @@ class SearchActivity : AppCompatActivity() {
         et.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) { doSearch(et.text.toString()); true } else false
         }
+
+        Nav.bind(this, Nav.SEARCH)
 
         showWords()
     }

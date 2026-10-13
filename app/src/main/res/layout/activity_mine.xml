@@ -111,4 +111,8 @@
             android:textSize="14sp"
             android:visibility="gone" />
     </FrameLayout>
+    <include
+        layout="@layout/view_bottom_nav"
+        android:layout_width="match_parent"
+        android:layout_height="58dp" />
 </LinearLayout>

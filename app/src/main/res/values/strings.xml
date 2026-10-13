@@ -19,6 +19,12 @@
     <string name="no_result">没有找到结果</string>
     <string name="parse_fail">解析不到播放地址，改用网页打开</string>
     <string name="filter_all">全部</string>
+    <string name="filter">筛选</string>
+    <string name="filter_title">筛选</string>
+    <string name="filter_region">地区</string>
+    <string name="filter_type">类型</string>
+    <string name="filter_reset">重置</string>
+    <string name="filter_done">完成</string>
 
     <string name="search_hint">搜片名、演员</string>
     <string name="hist_and_hot">搜索历史</string>

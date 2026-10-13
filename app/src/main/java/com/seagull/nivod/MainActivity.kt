@@ -3,7 +3,6 @@ package com.seagull.nivod
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,6 +15,7 @@ import com.seagull.nivod.data.ListCache
 import com.seagull.nivod.data.Site
 import com.seagull.nivod.data.Video
 import com.seagull.nivod.ui.CardMenu
+import com.seagull.nivod.ui.Nav
 import com.seagull.nivod.ui.VideoAdapter
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
@@ -71,16 +71,8 @@ class MainActivity : AppCompatActivity() {
             load()
         }
 
-        findViewById<ImageButton>(R.id.nav_home).setOnClickListener { list.scrollToPosition(0) }
-        findViewById<ImageButton>(R.id.nav_channel).setOnClickListener {
-            startActivity(Intent(this, ChannelActivity::class.java))
-        }
-        findViewById<ImageButton>(R.id.nav_search).setOnClickListener {
-            startActivity(Intent(this, SearchActivity::class.java))
-        }
-        findViewById<ImageButton>(R.id.nav_mine).setOnClickListener {
-            startActivity(Intent(this, MineActivity::class.java))
-        }
+        // 底栏：四个页面共用，选中态 + 跳转统一处理
+        Nav.bind(this, Nav.HOME) { list.scrollToPosition(0) }
 
         val cached = ListCache.get(KEY)
         if (cached != null && cached.items.isNotEmpty()) {

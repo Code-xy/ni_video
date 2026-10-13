@@ -18,6 +18,7 @@ import com.seagull.nivod.data.Site
 import com.seagull.nivod.data.Video
 import com.seagull.nivod.ui.CardMenu
 import com.seagull.nivod.ui.VideoAdapter
+import com.seagull.nivod.ui.Nav
 
 /** 「我的」：播放历史 + 收藏 */
 class MineActivity : AppCompatActivity() {
@@ -77,6 +78,8 @@ class MineActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.theme_light).setOnClickListener { pickTheme(ThemePref.LIGHT) }
         findViewById<TextView>(R.id.theme_dark).setOnClickListener { pickTheme(ThemePref.DARK) }
         paintThemeChips()
+
+        Nav.bind(this, Nav.MINE)
 
         switchTab(showFav)
     }

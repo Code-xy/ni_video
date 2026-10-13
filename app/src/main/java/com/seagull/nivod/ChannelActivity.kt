@@ -1,19 +1,24 @@
 package com.seagull.nivod
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ProgressBar
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.seagull.nivod.ui.Insets
 import com.seagull.nivod.data.Channel
 import com.seagull.nivod.data.ListCache
 import com.seagull.nivod.data.Region
@@ -21,14 +26,16 @@ import com.seagull.nivod.data.ShowType
 import com.seagull.nivod.data.Site
 import com.seagull.nivod.data.Video
 import com.seagull.nivod.ui.CardMenu
+import com.seagull.nivod.ui.Nav
 import com.seagull.nivod.ui.VideoAdapter
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
+import com.seagull.nivod.ui.Insets
 
 /**
  * 频道 + 筛选。
- * 实测站点没有分页（filter/search 各恒定 48 条），
- * 所以这里用 region × showtype 组合来翻找内容 —— 这才是站点真正的浏览入口。
+ * 站点没有分页，浏览靠 region × showtype 组合 —— 但把 30 多个胶囊摊三行太挤，
+ * 所以改成：顶部一排频道 tab（等分 + 下划线指示），地区和类型收进「筛选」弹窗。
  */
 class ChannelActivity : AppCompatActivity() {
 
@@ -37,6 +44,9 @@ class ChannelActivity : AppCompatActivity() {
     private lateinit var bar: ProgressBar
     private lateinit var adapter: VideoAdapter
     private lateinit var head: TextView
+    private lateinit var subtitle: TextView
+    private lateinit var filterBtn: TextView
+    private lateinit var tabRow: LinearLayout
 
     private val pool = Executors.newFixedThreadPool(2)
     private val busy = AtomicBoolean(false)
@@ -58,13 +68,15 @@ class ChannelActivity : AppCompatActivity() {
     override fun onCreate(s: Bundle?) {
         super.onCreate(s)
         setContentView(R.layout.activity_channel)
-
         Insets.pad(findViewById(R.id.root))
 
         list = findViewById(R.id.list)
         swipe = findViewById(R.id.swipe)
         bar = findViewById(R.id.bar)
         head = findViewById(R.id.head)
+        subtitle = findViewById(R.id.subtitle)
+        filterBtn = findViewById(R.id.filterBtn)
+        tabRow = findViewById(R.id.tabRow)
 
         adapter = VideoAdapter(
             onClick = { openDetail(it) },
@@ -75,21 +87,17 @@ class ChannelActivity : AppCompatActivity() {
         list.setHasFixedSize(true)
         list.itemAnimator = null
 
-        swipe.setColorSchemeColors(0xFF3DDC97.toInt())
+        swipe.setColorSchemeColors(ContextCompat.getColor(this, R.color.accent))
         swipe.setOnRefreshListener { ListCache.drop(key()); load() }
 
         findViewById<ImageButton>(R.id.back).setOnClickListener { finish() }
+        filterBtn.setOnClickListener { showFilterDialog() }
 
-        buildChips(findViewById(R.id.channelRow), Channel.values().map { it.label to it.slug }) { i ->
-            channel = Channel.values()[i]; afterFilterChange()
-        }
-        buildChips(findViewById(R.id.regionRow), Region.values().map { it.label to it.slug }) { i ->
-            region = Region.values()[i]; afterFilterChange()
-        }
-        buildChips(findViewById(R.id.typeRow), ShowType.values().map { it.label to it.slug }) { i ->
-            type = ShowType.values()[i]; afterFilterChange()
-        }
-        paintChips()
+        buildTabs()
+        paintTabs()
+        paintFilterBtn()
+
+        Nav.bind(this, Nav.CHANNEL)
 
         val cached = ListCache.get(key())
         if (cached != null && cached.items.isNotEmpty()) {
@@ -110,43 +118,141 @@ class ChannelActivity : AppCompatActivity() {
 
     private fun key() = "ch_${channel.name}_${region.name}_${type.name}"
 
-    // ───── 标签 ─────
+    private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
 
-    private fun buildChips(row: LinearLayout, data: List<Pair<String, String>>, onPick: (Int) -> Unit) {
-        row.removeAllViews()
-        for ((i, d) in data.withIndex()) {
-            val tv = TextView(this)
-            tv.text = d.first
-            tv.setTextSize(13f)
-            tv.gravity = android.view.Gravity.CENTER
-            tv.setPadding(36, 0, 36, 0)
-            tv.layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
-            ).apply { setMargins(6, 4, 6, 4) }
-            tv.setBackgroundResource(R.drawable.word_bg)
-            tv.setOnClickListener { onPick(i); paintChips() }
-            row.addView(tv)
+    // ───── 频道 tab（等分 + 下划线指示，取代横向滚动胶囊）─────
+
+    private fun buildTabs() {
+        tabRow.removeAllViews()
+        Channel.values().forEach { ch ->
+            val col = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                gravity = Gravity.CENTER
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f)
+                isClickable = true
+                background = ContextCompat.getDrawable(this@ChannelActivity, android.R.attr.selectableItemBackgroundBorderless)
+            }
+            val tv = TextView(this).apply {
+                text = ch.label
+                gravity = Gravity.CENTER
+                textSize = 14f
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f)
+            }
+            val underline = View(this).apply {
+                layoutParams = LinearLayout.LayoutParams(dp(24), dp(2))
+                setBackgroundColor(ContextCompat.getColor(this@ChannelActivity, R.color.accent))
+            }
+            col.addView(tv)
+            col.addView(underline)
+            col.setOnClickListener {
+                if (channel == ch) return@setOnClickListener
+                channel = ch
+                paintTabs()
+                afterFilterChange()
+            }
+            tabRow.addView(col)
         }
     }
 
-    private fun paintChips() {
-        paintRow(findViewById(R.id.channelRow), Channel.values().indexOf(channel))
-        paintRow(findViewById(R.id.regionRow), Region.values().indexOf(region))
-        paintRow(findViewById(R.id.typeRow), ShowType.values().indexOf(type))
+    private fun paintTabs() {
+        for (i in 0 until tabRow.childCount) {
+            val col = tabRow.getChildAt(i) as LinearLayout
+            val tv = col.getChildAt(0) as TextView
+            val underline = col.getChildAt(1)
+            val on = Channel.values()[i] == channel
+            tv.setTextColor(ContextCompat.getColor(this, if (on) R.color.accent else R.color.text_secondary))
+            tv.setTypeface(null, if (on) Typeface.BOLD else Typeface.NORMAL)
+            underline.visibility = if (on) View.VISIBLE else View.INVISIBLE
+        }
         head.text = channel.label
+        subtitle.text = listOf(channel.label, region.label, type.label)
+            .distinct().joinToString(" · ")
     }
 
-    private fun paintRow(row: LinearLayout, active: Int) {
-        for (i in 0 until row.childCount) {
-            val tv = row.getChildAt(i) as? TextView ?: continue
-            val on = i == active
-            tv.setTextColor(if (on) 0xFF3DDC97.toInt() else 0xAAFFFFFF.toInt())
-            tv.alpha = if (on) 1f else 0.65f
+    // ───── 筛选弹窗（地区 + 类型，等分三列，松快得多）─────
+
+    private fun showFilterDialog() {
+        val holder = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(16), dp(4), dp(16), dp(8))
         }
+        val scroll = ScrollView(this).apply { addView(holder) }
+
+        fun sectionTitle(t: String) = TextView(this).apply {
+            text = t
+            textSize = 12f
+            setTextColor(ContextCompat.getColor(this@ChannelActivity, R.color.text_tertiary))
+            setPadding(dp(4), dp(14), 0, dp(2))
+        }
+
+        fun chipGrid(labels: List<String>, cur: Int, onPick: (Int) -> Unit): LinearLayout {
+            val box = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+            var row: LinearLayout? = null
+            labels.forEachIndexed { i, label ->
+                if (i % 3 == 0) {
+                    row = LinearLayout(this).apply {
+                        orientation = LinearLayout.HORIZONTAL
+                        layoutParams = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                    }
+                    box.addView(row)
+                }
+                val tv = TextView(this).apply {
+                    text = label
+                    gravity = Gravity.CENTER
+                    textSize = 13f
+                    layoutParams = LinearLayout.LayoutParams(0, dp(38), 1f).apply {
+                        setMargins(dp(3), dp(3), dp(3), dp(3))
+                    }
+                    setBackgroundResource(R.drawable.word_bg)
+                }
+                paintChip(tv, i == cur)
+                tv.setOnClickListener { onPick(i); build() }
+                row!!.addView(tv)
+            }
+            return box
+        }
+
+        fun build() {
+            holder.removeAllViews()
+            holder.addView(sectionTitle(getString(R.string.filter_region)))
+            holder.addView(chipGrid(Region.values().map { it.label }, Region.values().indexOf(region)) { i ->
+                region = Region.values()[i]; afterFilterChange()
+            })
+            holder.addView(sectionTitle(getString(R.string.filter_type)))
+            holder.addView(chipGrid(ShowType.values().map { it.label }, ShowType.values().indexOf(type)) { i ->
+                type = ShowType.values()[i]; afterFilterChange()
+            })
+        }
+        build()
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.filter_title)
+            .setView(scroll)
+            .setPositiveButton(R.string.filter_done, null)
+            .setNeutralButton(R.string.filter_reset) { _, _ ->
+                region = Region.ALL; type = ShowType.ALL
+                paintFilterBtn(); afterFilterChange()
+            }
+            .show()
+    }
+
+    private fun paintChip(tv: TextView, on: Boolean) {
+        tv.setTextColor(ContextCompat.getColor(this, if (on) R.color.accent else R.color.text_secondary))
+        tv.setTypeface(null, if (on) Typeface.BOLD else Typeface.NORMAL)
+        tv.alpha = if (on) 1f else 0.85f
+    }
+
+    private fun paintFilterBtn() {
+        val n = (if (region != Region.ALL) 1 else 0) + (if (type != ShowType.ALL) 1 else 0)
+        filterBtn.text = if (n == 0) getString(R.string.filter) else "${getString(R.string.filter)} · $n"
+        filterBtn.setTextColor(ContextCompat.getColor(this, if (n > 0) R.color.accent else R.color.text_secondary))
     }
 
     private fun afterFilterChange() {
+        paintFilterBtn()
+        paintTabs()
         ListCache.drop(key())
         adapter.add(emptyList(), false)
         load()
