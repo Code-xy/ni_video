@@ -31,6 +31,7 @@ import com.seagull.nivod.ui.VideoAdapter
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import com.seagull.nivod.ui.Insets
+import android.util.TypedValue
 
 /**
  * 频道 + 筛选。
@@ -120,6 +121,20 @@ class ChannelActivity : AppCompatActivity() {
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
 
+    /**
+     * 代码里取主题属性要先用 TypedValue 解析。
+     * 直接 ContextCompat.getDrawable(this, android.R.attr.xxx) 会拿属性 ID 当资源 ID 用，
+     * 抛 Resources$NotFoundException（android.R.attr.selectableItemBackgroundBorderless = 0x0101045c）。
+     */
+    private fun rippleBg(): android.graphics.drawable.Drawable? {
+        val tv = TypedValue()
+        return if (theme.resolveAttribute(
+                android.R.attr.selectableItemBackgroundBorderless, tv, true
+            ) && tv.resourceId != 0
+        ) ContextCompat.getDrawable(this, tv.resourceId) else null
+    }
+
+
     // ───── 频道 tab（等分 + 下划线指示，取代横向滚动胶囊）─────
 
     private fun buildTabs() {
@@ -130,7 +145,7 @@ class ChannelActivity : AppCompatActivity() {
                 gravity = Gravity.CENTER
                 layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f)
                 isClickable = true
-                background = ContextCompat.getDrawable(this@ChannelActivity, android.R.attr.selectableItemBackgroundBorderless)
+                background = rippleBg()
             }
             val tv = TextView(this).apply {
                 text = ch.label
