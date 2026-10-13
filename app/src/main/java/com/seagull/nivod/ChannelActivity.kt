@@ -186,6 +186,10 @@ class ChannelActivity : AppCompatActivity() {
             setPadding(dp(4), dp(14), 0, dp(2))
         }
 
+        // 用 var 持有重建函数，避免局部函数互相前向引用
+        // （局部函数 Kotlin 不做提升，之前叫 build() 还撞上了标准库的 build(builder) 重载）
+        var refresh: () -> Unit = {}
+
         fun chipGrid(labels: List<String>, cur: Int, onPick: (Int) -> Unit): LinearLayout {
             val box = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
             var row: LinearLayout? = null
@@ -194,7 +198,9 @@ class ChannelActivity : AppCompatActivity() {
                     row = LinearLayout(this).apply {
                         orientation = LinearLayout.HORIZONTAL
                         layoutParams = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        )
                     }
                     box.addView(row)
                 }
@@ -208,32 +214,41 @@ class ChannelActivity : AppCompatActivity() {
                     setBackgroundResource(R.drawable.word_bg)
                 }
                 paintChip(tv, i == cur)
-                tv.setOnClickListener { onPick(i); build() }
+                tv.setOnClickListener { onPick(i); refresh() }
                 row!!.addView(tv)
             }
             return box
         }
 
-        fun build() {
+        refresh = {
             holder.removeAllViews()
             holder.addView(sectionTitle(getString(R.string.filter_region)))
-            holder.addView(chipGrid(Region.values().map { it.label }, Region.values().indexOf(region)) { i ->
-                region = Region.values()[i]; afterFilterChange()
-            })
+            holder.addView(
+                chipGrid(Region.values().map { it.label }, Region.values().indexOf(region)) { i ->
+                    region = Region.values()[i]
+                    afterFilterChange()
+                }
+            )
             holder.addView(sectionTitle(getString(R.string.filter_type)))
-            holder.addView(chipGrid(ShowType.values().map { it.label }, ShowType.values().indexOf(type)) { i ->
-                type = ShowType.values()[i]; afterFilterChange()
-            })
+            holder.addView(
+                chipGrid(ShowType.values().map { it.label }, ShowType.values().indexOf(type)) { i ->
+                    type = ShowType.values()[i]
+                    afterFilterChange()
+                }
+            )
         }
-        build()
+        refresh()
 
         AlertDialog.Builder(this)
             .setTitle(R.string.filter_title)
             .setView(scroll)
             .setPositiveButton(R.string.filter_done, null)
             .setNeutralButton(R.string.filter_reset) { _, _ ->
-                region = Region.ALL; type = ShowType.ALL
-                paintFilterBtn(); afterFilterChange()
+                region = Region.ALL
+                type = ShowType.ALL
+                paintFilterBtn()
+                afterFilterChange()
+                refresh()
             }
             .show()
     }
