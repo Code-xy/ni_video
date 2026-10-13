@@ -1,0 +1,4 @@
+run_number=16
+head_sha=9d5c27b190dfe3b8af4e0e796664bbb44b07e122
+job_status=success
+apk=app-release.apk  14469350 bytes  sha256=8fb6df54e967e02bd82a0ef486461a35
