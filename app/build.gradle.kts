@@ -33,8 +33,8 @@ android {
         applicationId = "com.seagull.nivod"
         minSdk = 23
         targetSdk = 35
-        versionCode = pVCode?.toIntOrNull() ?: 4
-        versionName = pVName ?: "1.0.3"
+        versionCode = pVCode?.toIntOrNull() ?: 5
+        versionName = pVName ?: "1.0.4"
         vectorDrawables.useSupportLibrary = true
 
         if (pAbi.isNotEmpty()) {

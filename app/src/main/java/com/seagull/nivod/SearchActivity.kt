@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.seagull.nivod.ui.Insets
 import com.seagull.nivod.data.Site
 import com.seagull.nivod.data.Video
 import com.seagull.nivod.ui.CardMenu
@@ -51,6 +52,8 @@ class SearchActivity : AppCompatActivity() {
     override fun onCreate(s: Bundle?) {
         super.onCreate(s)
         setContentView(R.layout.activity_search)
+
+        Insets.pad(findViewById(R.id.root), ime = true)
 
         et = findViewById(R.id.et)
         wordsRv = findViewById(R.id.words)

@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.seagull.nivod.data.FavStore
 import com.seagull.nivod.data.Site
 import com.seagull.nivod.data.Video
+import com.seagull.nivod.ui.Insets
 import com.seagull.nivod.ui.PlayerLauncher
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
@@ -108,6 +109,8 @@ class PlayerActivity : AppCompatActivity() {
         btnNext = findViewById(R.id.btn_next)
         btnEps = findViewById(R.id.btn_eps)
         overlay = findViewById(R.id.actions)
+        // 视频要铺满屏幕，只让叠加条避开状态栏/挖孔
+        Insets.marginTop(overlay, 6)
         player.keepScreenOn = true
 
         urls = intent.getStringArrayListExtra(EXTRA_URLS) ?: arrayListOf()

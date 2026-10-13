@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.seagull.nivod.ui.Insets
 import com.seagull.nivod.data.ListCache
 import com.seagull.nivod.data.Site
 import com.seagull.nivod.data.Video
@@ -48,6 +49,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(s: Bundle?) {
         super.onCreate(s)
         setContentView(R.layout.activity_main)
+
+        Insets.pad(findViewById(R.id.root))
 
         list = findViewById(R.id.list)
         swipe = findViewById(R.id.swipe)

@@ -84,6 +84,8 @@ class WebActivity : AppCompatActivity() {
     override fun onCreate(s: Bundle?) {
         super.onCreate(s)
         setContentView(R.layout.activity_web)
+
+        Insets.pad(findViewById(R.id.root))
         web = findViewById(R.id.web)
         root = findViewById(R.id.root)
         bar = findViewById(R.id.bar)

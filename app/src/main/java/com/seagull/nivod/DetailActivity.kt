@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import coil.load
+import com.seagull.nivod.ui.Insets
 import com.seagull.nivod.data.Detail
 import com.seagull.nivod.data.Episode
 import com.seagull.nivod.data.FavStore
@@ -62,6 +63,8 @@ class DetailActivity : AppCompatActivity() {
     override fun onCreate(s: Bundle?) {
         super.onCreate(s)
         setContentView(R.layout.activity_detail)
+
+        Insets.pad(findViewById(R.id.root))
 
         bar = findViewById(R.id.bar)
         cover = findViewById(R.id.cover)

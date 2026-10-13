@@ -11,6 +11,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.seagull.nivod.ui.Insets
 import com.seagull.nivod.data.FavStore
 import com.seagull.nivod.data.Site
 import com.seagull.nivod.data.Video
@@ -42,6 +43,8 @@ class MineActivity : AppCompatActivity() {
     override fun onCreate(s: Bundle?) {
         super.onCreate(s)
         setContentView(R.layout.activity_mine)
+
+        Insets.pad(findViewById(R.id.root))
 
         list = findViewById(R.id.list)
         empty = findViewById(R.id.empty)

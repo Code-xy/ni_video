@@ -21,6 +21,8 @@ class CrashActivity : AppCompatActivity() {
         super.onCreate(s)
         setContentView(R.layout.activity_crash)
 
+        Insets.pad(findViewById(R.id.root))
+
         val trace = intent.getStringExtra(EXTRA_TEXT).orEmpty()
         val file = intent.getStringExtra(EXTRA_PATH).orEmpty()
 
