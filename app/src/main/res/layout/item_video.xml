@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="3dp">
+    android:padding="4dp">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -23,12 +23,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top|start"
-            android:layout_margin="3dp"
-            android:background="@color/accent"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:paddingTop="1dp"
-            android:paddingBottom="1dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/badge_bg"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
             android:textColor="@color/on_accent"
             android:textSize="10sp"
             android:visibility="gone" />
@@ -38,20 +40,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
-            android:layout_margin="3dp"
-            android:background="@color/scrim"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:paddingTop="1dp"
-            android:paddingBottom="1dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/scrim_bg"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
             android:textColor="@color/player_accent"
             android:textSize="11sp"
+            android:textStyle="bold"
             android:visibility="gone" />
 
         <View
             android:id="@+id/prog"
             android:layout_width="0dp"
-            android:layout_height="2dp"
+            android:layout_height="3dp"
             android:layout_gravity="bottom"
             android:background="@color/accent"
             android:visibility="gone" />
@@ -63,10 +66,9 @@
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:maxLines="1"
-        android:paddingLeft="2dp"
-        android:paddingRight="2dp"
-        android:paddingTop="6dp"
-        android:lineSpacingExtra="1dp"
+        android:paddingLeft="3dp"
+        android:paddingRight="3dp"
+        android:paddingTop="7dp"
         android:textColor="@color/text_primary"
         android:textSize="13sp" />
 
@@ -76,10 +78,10 @@
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:maxLines="1"
-        android:paddingLeft="2dp"
-        android:paddingRight="2dp"
-        android:paddingTop="1dp"
-        android:paddingBottom="3dp"
+        android:paddingLeft="3dp"
+        android:paddingRight="3dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="4dp"
         android:textColor="@color/text_tertiary"
         android:textSize="11sp" />
 </LinearLayout>

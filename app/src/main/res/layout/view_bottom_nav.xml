@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="58dp"
-    android:background="@drawable/bottom_bar_bg"
+    android:background="@drawable/bottom_nav_bg"
     android:orientation="horizontal">
 
     <LinearLayout android:id="@+id/nav_home" style="@style/NavItem">

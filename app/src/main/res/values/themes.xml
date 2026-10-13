@@ -9,6 +9,9 @@
         <item name="colorControlActivated">@color/accent</item>
         <item name="android:textColorPrimary">@color/text_primary</item>
         <item name="android:textColorSecondary">@color/text_secondary</item>
+        <!-- 关键：禁掉系统/OEM 的「强制深色」，否则 MIUI 会在我的浅色主题上再叠一层反色，
+             结果就是浅底浅字、完全看不清 -->
+        <item name="android:forceDarkAllowed">false</item>
     </style>
 
     <style name="AppTheme.Fullscreen" parent="AppTheme">

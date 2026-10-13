@@ -19,6 +19,7 @@ import com.seagull.nivod.data.Video
 import com.seagull.nivod.ui.CardMenu
 import com.seagull.nivod.ui.VideoAdapter
 import com.seagull.nivod.ui.Nav
+import android.graphics.Typeface
 
 /** 「我的」：播放历史 + 收藏 */
 class MineActivity : AppCompatActivity() {
@@ -91,7 +92,7 @@ class MineActivity : AppCompatActivity() {
 
     private fun paintThemeChips() {
         val cur = ThemePref.mode(this)
-        val on = ContextCompat.getColor(this, R.color.accent)
+        val onC = ContextCompat.getColor(this, R.color.on_accent_container)
         val off = ContextCompat.getColor(this, R.color.text_secondary)
         listOf(
             R.id.theme_system to ThemePref.FOLLOW,
@@ -99,8 +100,10 @@ class MineActivity : AppCompatActivity() {
             R.id.theme_dark to ThemePref.DARK
         ).forEach { (id, mode) ->
             findViewById<TextView>(id).apply {
-                setTextColor(if (cur == mode) on else off)
-                alpha = if (cur == mode) 1f else 0.7f
+                val sel = cur == mode
+                setBackgroundResource(if (sel) R.drawable.word_bg_on else R.drawable.word_bg)
+                setTextColor(if (sel) onC else off)
+                setTypeface(null, if (sel) Typeface.BOLD else Typeface.NORMAL)
             }
         }
     }

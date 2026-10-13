@@ -267,10 +267,16 @@ class ChannelActivity : AppCompatActivity() {
             .show()
     }
 
+    /** 选中态不只是改文字颜色 —— 填充主色容器 + 主色描边，一眼能看出选了哪个 */
     private fun paintChip(tv: TextView, on: Boolean) {
-        tv.setTextColor(ContextCompat.getColor(this, if (on) R.color.accent else R.color.text_secondary))
+        tv.setBackgroundResource(if (on) R.drawable.word_bg_on else R.drawable.word_bg)
+        tv.setTextColor(
+            ContextCompat.getColor(
+                this, if (on) R.color.on_accent_container else R.color.text_secondary
+            )
+        )
         tv.setTypeface(null, if (on) Typeface.BOLD else Typeface.NORMAL)
-        tv.alpha = if (on) 1f else 0.85f
+        tv.alpha = 1f
     }
 
 
@@ -287,7 +293,13 @@ class ChannelActivity : AppCompatActivity() {
     private fun paintFilterBtn() {
         val n = (if (region != Region.ALL) 1 else 0) + (if (type != ShowType.ALL) 1 else 0)
         filterBtn.text = if (n == 0) getString(R.string.filter) else "${getString(R.string.filter)} · $n"
-        filterBtn.setTextColor(ContextCompat.getColor(this, if (n > 0) R.color.accent else R.color.text_secondary))
+        filterBtn.setBackgroundResource(if (n > 0) R.drawable.word_bg_on else R.drawable.word_bg)
+        filterBtn.setTextColor(
+            ContextCompat.getColor(
+                this, if (n > 0) R.color.on_accent_container else R.color.text_secondary
+            )
+        )
+        filterBtn.setTypeface(null, if (n > 0) Typeface.BOLD else Typeface.NORMAL)
     }
 
     private fun afterFilterChange() {

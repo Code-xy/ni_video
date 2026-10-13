@@ -169,8 +169,14 @@ class DetailActivity : AppCompatActivity() {
             tv.setBackgroundResource(R.drawable.word_bg)
             tv.layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
                 .apply { setMargins(4, 4, 4, 4) }
-            tv.isSelected = e.slug == selectedEp
-            tv.setTextColor(if (e.slug == selectedEp) 0xFF3DDC97.toInt() else 0xDDDDDDDD.toInt())
+            val on = e.slug == selectedEp
+            tv.setBackgroundResource(if (on) R.drawable.word_bg_on else R.drawable.word_bg)
+            tv.setTextColor(
+                ContextCompat.getColor(
+                    this, if (on) R.color.on_accent_container else R.color.text_primary
+                )
+            )
+            tv.setTypeface(null, if (on) android.graphics.Typeface.BOLD else android.graphics.Typeface.NORMAL)
             tv.setOnClickListener {
                 selectedEp = e.slug
                 buildEpisodes(eps)
