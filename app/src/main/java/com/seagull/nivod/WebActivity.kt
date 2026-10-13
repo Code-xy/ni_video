@@ -101,7 +101,7 @@ class WebActivity : AppCompatActivity() {
             mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
             userAgentString = userAgentString + " NiVodApp/1.0"
         }
-        web.setBackgroundColor(0xFF0E0E12.toInt())
+        web.setBackgroundColor(androidx.core.content.ContextCompat.getColor(this, R.color.bg))
         web.setLayerType(View.LAYER_TYPE_HARDWARE, null)
         web.addJavascriptInterface(Bridge(), "NiVod")
         WebView.setWebContentsDebuggingEnabled(true)
@@ -109,7 +109,7 @@ class WebActivity : AppCompatActivity() {
         CookieManager.getInstance().setAcceptCookie(true)
         CookieManager.getInstance().setAcceptThirdPartyCookies(web, true)
 
-        swipe.setColorSchemeColors(0xFF3DDC97.toInt())
+        swipe.setColorSchemeColors(androidx.core.content.ContextCompat.getColor(this, R.color.accent))
         swipe.setOnRefreshListener { web.reload() }
 
         // 不支持时靠 onPageFinished 兜底；inject.js 自带幂等守卫，重复注入无害

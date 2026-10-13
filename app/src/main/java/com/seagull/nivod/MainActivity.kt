@@ -19,6 +19,7 @@ import com.seagull.nivod.ui.Nav
 import com.seagull.nivod.ui.VideoAdapter
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
+import androidx.core.content.ContextCompat
 
 /** 首页：站点 / 的 72 张卡片（无分页，一次拉完） */
 class MainActivity : AppCompatActivity() {
@@ -65,7 +66,7 @@ class MainActivity : AppCompatActivity() {
         list.setHasFixedSize(true)
         list.itemAnimator = null
 
-        swipe.setColorSchemeColors(0xFF3DDC97.toInt())
+        swipe.setColorSchemeColors(ContextCompat.getColor(this, R.color.accent))
         swipe.setOnRefreshListener {
             ListCache.drop(KEY)
             load()

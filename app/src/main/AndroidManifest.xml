@@ -21,7 +21,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
-            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|density">
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|density">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -29,30 +29,30 @@
         </activity>
 
         <activity android:name=".ChannelActivity" android:exported="false"
-            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|density" />
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|density" />
 
         <activity android:name=".DetailActivity" android:exported="false"
-            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|density" />
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|density" />
 
         <activity android:name=".SearchActivity" android:exported="false"
             android:windowSoftInputMode="adjustResize"
-            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|density" />
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|density" />
 
         <activity android:name=".MineActivity" android:exported="false"
-            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|density" />
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|density" />
 
         <activity android:name=".WebActivity" android:exported="false"
             android:windowSoftInputMode="adjustResize"
-            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|density" />
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|density" />
 
         <activity android:name=".PlayerActivity" android:exported="false"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.Fullscreen"
-            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|density" />
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|density" />
 
         <activity android:name=".CrashActivity" android:exported="false"
             android:process=":crash"
             android:excludeFromRecents="true"
-            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|density" />
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|density" />
     </application>
 </manifest>

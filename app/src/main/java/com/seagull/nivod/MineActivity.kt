@@ -87,7 +87,9 @@ class MineActivity : AppCompatActivity() {
 
     private fun pickTheme(mode: Int) {
         ThemePref.set(this, mode)
-        paintThemeChips()
+        // 双保险：正常情况下 setDefaultNightMode 会自动重建当前 Activity，
+        // 但部分 ROM 不重建，用户就会觉得「必须重启才生效」。
+        recreate()
     }
 
     private fun paintThemeChips() {
@@ -115,8 +117,13 @@ class MineActivity : AppCompatActivity() {
 
     private fun switchTab(fav: Boolean) {
         showFav = fav
-        tabHistory.setTextColor(if (!showFav) 0xFF3DDC97.toInt() else 0x99FFFFFF.toInt())
-        tabFav.setTextColor(if (showFav) 0xFF3DDC97.toInt() else 0x99FFFFFF.toInt())
+        // ★ 这里原来是写死的 0x99FFFFFF —— 浅色模式下白字压白底，收藏 tab 直接隐形
+        val tabOn = ContextCompat.getColor(this, R.color.accent)
+        val tabOff = ContextCompat.getColor(this, R.color.text_secondary)
+        tabHistory.setTextColor(if (!showFav) tabOn else tabOff)
+        tabFav.setTextColor(if (showFav) tabOn else tabOff)
+        tabHistory.setTypeface(null, if (!showFav) Typeface.BOLD else Typeface.NORMAL)
+        tabFav.setTypeface(null, if (showFav) Typeface.BOLD else Typeface.NORMAL)
         regenerate()
     }
 
